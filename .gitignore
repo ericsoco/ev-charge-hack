@@ -1,3 +1,6 @@
 .*cache/
+.env.local
 dist/
 node_modules/
+static/data/
+yarn-error.log
