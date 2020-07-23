@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, type BareStyledComponent } from 'styled-components';
 
-const Container = styled.div`
+const Container: BareStyledComponent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,12 +69,15 @@ const IconContainer = styled.div`
   }
 `;
 
+type Props = $ReadOnly<{|
+  withBackground: boolean,
+|}>;
+
 /**
  * CC0-licensed loading indicator
  * from https://loading.io/css/
  */
-// eslint-disable-next-line react/prop-types
-export default function LoadingIcon({ withBackground }) {
+export default function LoadingIcon({ withBackground }: Props) {
   return (
     <Container>
       {withBackground && <IconBackground />}

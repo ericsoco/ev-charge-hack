@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -12,18 +13,22 @@ import App from './view/app';
 import FourOhFour from './view/404';
 
 const store = createStore(rootReducer, initialState);
+const appElement = document.getElementById('app');
+const basePath = process.env.BASE_PATH || '';
 
-render(
-  <Provider store={store}>
-    <ThemeProvider theme={theme}>
-      <BrowserRouter basename={`/${process.env.BASE_PATH}`}>
-        <Switch>
-          <Route path={'/'} exact component={App} />
-          <Route component={FourOhFour} />
-        </Switch>
-      </BrowserRouter>
-      <GlobalStyles />
-    </ThemeProvider>
-  </Provider>,
-  document.getElementById('app')
-);
+if (appElement) {
+  render(
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter basename={`/${basePath}`}>
+          <Switch>
+            <Route path={'/'} exact component={App} />
+            <Route component={FourOhFour} />
+          </Switch>
+        </BrowserRouter>
+        <GlobalStyles />
+      </ThemeProvider>
+    </Provider>,
+    appElement
+  );
+}

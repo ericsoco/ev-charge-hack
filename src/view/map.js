@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { FlyToInterpolator } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
-import styled from 'styled-components';
+import styled, { type BareStyledComponent } from 'styled-components';
 
 import LoadingIcon from './loading-icon';
 
@@ -13,7 +13,7 @@ const basemap = performAdditiveBlending
   ? 'mapbox://styles/mapbox/dark-v10'
   : 'mapbox://styles/mapbox/light-v10';
 
-const StyledContainer = styled.div`
+const StyledContainer: BareStyledComponent = styled.div`
   canvas {
     mix-blend-mode: multiply;
   }
@@ -82,9 +82,10 @@ const mapViewState = {
   },
 };
 
-export default function Map(props) {
-  // eslint-disable-next-line react/prop-types
-  const currentCity = props.currentCity || 'SF';
+type Props = $ReadOnly<{|
+  currentCity?: string,
+|}>;
+export default function Map({ currentCity = 'SF' }: Props) {
   const [viewState, setViewState] = useState(mapViewState[currentCity]);
   useEffect(() => {
     setViewState(mapViewState[currentCity]);

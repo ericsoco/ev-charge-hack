@@ -6,6 +6,7 @@
   },
   "extends": [
     "eslint:recommended",
+    "plugin:flowtype/recommended",
     "plugin:react/recommended"
   ],
   "globals": {
@@ -20,9 +21,14 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "flowtype",
+    "react",
+    "react-hooks"
   ],
-  "rules": {},
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  },  
   "settings": {
     "react": {
       "pragma": "React",

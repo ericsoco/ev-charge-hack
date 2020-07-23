@@ -1,0 +1,15 @@
+[ignore]
+.*/node_modules/.*[^(package)]\.json$
+.*/node_modules/.*/test/.*
+
+[include]
+./src/
+
+[libs]
+
+[lints]
+
+[options]
+esproposal.optional_chaining=enable
+
+[strict]
