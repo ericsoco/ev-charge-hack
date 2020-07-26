@@ -9,6 +9,7 @@ import {
 } from '../state/data-reducer';
 import { selectCurrentCity } from '../state/ui-selectors';
 import useData, { type Dataset } from '../hooks/use-data';
+import useDeriveScale from '../hooks/use-derive-scale';
 import Map from './map';
 
 const Overlay = styled.div`
@@ -35,22 +36,30 @@ const Title = styled.h1`
   ${p => p.theme.mixins.h1};
 `;
 
-// TODO: remove this and use something like useDeriveScales from hospital-trips
+// TODO: move this into useData
 const processChargingData = (
   data: Dataset<ChargingRawDatum> | null
-): Dataset<ChargingDatum> =>
-  (data || []).map(d => ({
-    hex: d.hex,
-    onShift: d.od_kwh / 100,
-    atHome: d.home_kwh / 100,
-  }));
+): Dataset<ChargingDatum> | null =>
+  data
+    ? data.map(d => ({
+        hex: d.hex,
+        onShift: parseFloat(d.od_kwh),
+        atHome: parseFloat(d.home_kwh),
+      }))
+    : null;
+
+const colorAccessor = (d: ChargingDatum) => d.onShift;
+const heightAccessor = (d: ChargingDatum) => d.atHome;
 
 export default function App() {
-  const currentCity = useSelector(selectCurrentCity());
+  const currentCity = useSelector(selectCurrentCity);
   const chargingRawData = useData<ChargingRawDatum>({ city: currentCity });
   const chargingData = useMemo(() => processChargingData(chargingRawData), [
     chargingRawData,
   ]);
+
+  useDeriveScale(chargingData, 'color', colorAccessor);
+  useDeriveScale(chargingData, 'height', heightAccessor);
 
   return (
     <div>

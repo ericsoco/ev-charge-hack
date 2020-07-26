@@ -5,14 +5,10 @@ import { createAction, handleActions } from 'redux-actions';
 import { reduceOver } from './utils';
 import { type RootState } from './root-reducer';
 
-//
-// TODO: this file has not yet been adapted from hospital-trips
-//
-
 export type ChargingRawDatum = $ReadOnly<{
   hex: string,
-  od_kwh: number,
-  home_kwh: number,
+  od_kwh: string,
+  home_kwh: string,
 }>;
 export type ChargingDatum = $ReadOnly<{
   hex: string,
@@ -21,19 +17,17 @@ export type ChargingDatum = $ReadOnly<{
 }>;
 
 export type DataState = $ReadOnly<{|
-  colorScale: (number => number) | null,
-  sizeScale: (number => number) | null,
+  colorScale: (number => string) | null,
+  heightScale: (number => number) | null,
 |}>;
 
 export const INITIAL_STATE: DataState = {
   colorScale: null,
-  sizeScale: null,
+  heightScale: null,
 };
 
-export const GRID_SIZE_METERS = 1113.2;
-
 export const setColorScale = createAction('SET_COLOR_SCALE');
-export const setSizeScale = createAction('SET_SIZE_SCALE');
+export const setHeightScale = createAction('SET_HEIGHT_SCALE');
 
 const reducer = handleActions(
   {
@@ -41,9 +35,9 @@ const reducer = handleActions(
       ...state,
       colorScale: payload,
     }),
-    [setSizeScale]: (state, { payload }) => ({
+    [setHeightScale]: (state, { payload }) => ({
       ...state,
-      sizeScale: payload,
+      heightScale: payload,
     }),
   },
   INITIAL_STATE

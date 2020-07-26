@@ -1,5 +1,6 @@
 // @flow
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import DeckGL from '@deck.gl/react';
 import { AmbientLight, DirectionalLight, LightingEffect } from '@deck.gl/core';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
@@ -10,6 +11,7 @@ import styled, { type BareStyledComponent } from 'styled-components';
 import LoadingIcon from './loading-icon';
 import { type Dataset } from '../hooks/use-data';
 import { type ChargingDatum } from '../state/data-reducer';
+import { selectColorScale, selectHeightScale } from '../state/data-selectors';
 import { type City } from '../state/ui-reducer';
 
 const performAdditiveBlending = false;
@@ -110,7 +112,16 @@ const hexMaterial = {
   shininess: 32,
   specularColor: [30, 30, 30],
 };
+
 const is3d = false;
+
+const RGB_REGEX = /rgb\((.*)\)/;
+function rgbToArray(rgbStr) {
+  const match = (rgbStr || '').match(RGB_REGEX);
+  return match && match[1]
+    ? match[1].split(',').map(d => parseInt(d.trim()))
+    : [0, 0, 0, 0];
+}
 
 type Props = $ReadOnly<{|
   currentCity: City,
@@ -121,6 +132,9 @@ export default function Map({ currentCity, chargingData }: Props) {
   useEffect(() => {
     setViewState(mapViewState[currentCity]);
   }, [currentCity]);
+
+  const colorScale = useSelector(selectColorScale);
+  const heightScale = useSelector(selectHeightScale);
 
   // TODO: implement / remove as necessary
   const isHovering = false;
@@ -141,20 +155,24 @@ export default function Map({ currentCity, chargingData }: Props) {
           mapboxApiAccessToken={process.env.MapboxAccessToken}
           mapStyle={basemap}
         />
-        <H3HexagonLayer
-          id={'h3-hexagon-layer'}
-          data={chargingData}
-          // pickable={true}
-          coverage={0.9}
-          wireframe={false}
-          filled={true}
-          extruded={is3d}
-          elevationScale={20}
-          getHexagon={d => d.hex}
-          getFillColor={d => [255, d.onShift * 255, 0]}
-          getElevation={is3d ? d => d.atHome * 100 : undefined}
-          material={is3d ? hexMaterial : undefined}
-        />
+        {colorScale && heightScale && (
+          <H3HexagonLayer
+            id={'h3-hexagon-layer'}
+            data={chargingData}
+            // pickable={true}
+            coverage={0.9}
+            wireframe={false}
+            filled={true}
+            extruded={is3d}
+            elevationScale={20}
+            getHexagon={d => d.hex}
+            // TODO: use accessor from app.js instead of hardcoding d.onShift
+            getFillColor={d => rgbToArray(colorScale(d.onShift))}
+            // TODO: use accessor from app.js instead of hardcoding d.atHome
+            getElevation={is3d ? d => heightScale(d.atHome) : undefined}
+            material={is3d ? hexMaterial : undefined}
+          />
+        )}
       </DeckGL>
       {isLoading && <LoadingIcon withBackground />}
     </StyledContainer>
