@@ -8,12 +8,12 @@ import { interpolateOrRd } from 'd3-scale-chromatic';
 import { setColorScale, setHeightScale } from '../state/data-reducer';
 import { type Dataset } from './use-data';
 
+// TODO: type d3 scales and use as return type here
 type ScaleType = 'color' | 'height';
 function deriveScale(dataset, scaleType, accessor) {
   switch (scaleType) {
     case 'color': {
       const p90 = quantile(dataset, 0.9, accessor);
-      console.log({ p90 });
       return scaleSequential()
         .domain([0, p90])
         .interpolator(interpolateOrRd);
@@ -49,7 +49,7 @@ export default function useDeriveScale<T>(
     if (dataset && setScale) {
       const scale = deriveScale(dataset, scaleType, accessor);
       if (scale) {
-        dispatch(setScale(scale));
+        dispatch(setScale(d => scale(accessor(d))));
       }
     }
   }, [scaleType, setScale, dispatch, dataset, accessor]);

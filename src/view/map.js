@@ -26,6 +26,43 @@ const StyledContainer: BareStyledComponent = styled.div`
   }
 `;
 
+const Tooltip = styled.div`
+  position: absolute;
+  z-index: 1;
+  width: 16rem;
+  height: auto;
+  left: ${p => p.left}px;
+  top: ${p => p.top}px;
+  padding: 1rem;
+  background-color: #ffffff;
+  color: #000000;
+  pointer-events: none;
+`;
+// const TooltipTitle = styled.h2`
+//   font-size: 1rem;
+//   margin-bottom: 0.5rem;
+// `;
+const TooltipBody = styled.div`
+  font-size: 1rem;
+`;
+
+function renderHexTooltip(hoverInfo) {
+  if (!hoverInfo || !hoverInfo.picked || !hoverInfo.object) {
+    return null;
+  }
+  const { object, x, y } = hoverInfo;
+  return (
+    <Tooltip left={x + 16} top={y + 16}>
+      <TooltipBody>
+        <ul>
+          <li>{`on shift: ${object.onShift}`}</li>
+          <li>{`at home: ${object.atHome}`}</li>
+        </ul>
+      </TooltipBody>
+    </Tooltip>
+  );
+}
+
 const commonViewState = {
   pitch: 0,
   bearing: 0,
@@ -133,11 +170,13 @@ export default function Map({ currentCity, chargingData }: Props) {
     setViewState(mapViewState[currentCity]);
   }, [currentCity]);
 
+  const [hoverInfo, setHoverInfo] = useState(null);
+
   const colorScale = useSelector(selectColorScale);
   const heightScale = useSelector(selectHeightScale);
 
   // TODO: implement / remove as necessary
-  const isHovering = false;
+  const isHovering = hoverInfo && hoverInfo.picked;
   const isLoading = !chargingData;
 
   return (
@@ -159,20 +198,20 @@ export default function Map({ currentCity, chargingData }: Props) {
           <H3HexagonLayer
             id={'h3-hexagon-layer'}
             data={chargingData}
-            // pickable={true}
+            pickable={true}
+            onHover={setHoverInfo}
             coverage={0.9}
             wireframe={false}
             filled={true}
             extruded={is3d}
             elevationScale={20}
             getHexagon={d => d.hex}
-            // TODO: use accessor from app.js instead of hardcoding d.onShift
-            getFillColor={d => rgbToArray(colorScale(d.onShift))}
-            // TODO: use accessor from app.js instead of hardcoding d.atHome
-            getElevation={is3d ? d => heightScale(d.atHome) : undefined}
+            getFillColor={d => rgbToArray(colorScale(d))}
+            getElevation={is3d ? d => heightScale(d) : undefined}
             material={is3d ? hexMaterial : undefined}
           />
         )}
+        {renderHexTooltip(hoverInfo)}
       </DeckGL>
       {isLoading && <LoadingIcon withBackground />}
     </StyledContainer>

@@ -17,8 +17,8 @@ export type ChargingDatum = $ReadOnly<{
 }>;
 
 export type DataState = $ReadOnly<{|
-  colorScale: (number => string) | null,
-  heightScale: (number => number) | null,
+  colorScale: (ChargingDatum => string) | null,
+  heightScale: (ChargingDatum => number) | null,
 |}>;
 
 export const INITIAL_STATE: DataState = {
