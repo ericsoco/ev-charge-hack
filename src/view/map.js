@@ -1,6 +1,7 @@
 // @flow
 import React, { useEffect, useState } from 'react';
 import DeckGL from '@deck.gl/react';
+import { AmbientLight, DirectionalLight, LightingEffect } from '@deck.gl/core';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { FlyToInterpolator } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
@@ -29,10 +30,12 @@ const commonViewState = {
   transitionDuration: 3000,
   transitionInterpolator: new FlyToInterpolator(),
 };
+
+// TODO: prune for EV Charging-relevant cities
 const mapViewState = {
   LON: {
-    longitude: 0.1278,
-    latitude: 51.5074,
+    longitude: -0.2,
+    latitude: 51.5,
     zoom: 9,
   },
   CHI: {
@@ -91,6 +94,24 @@ const mapViewState = {
   },
 };
 
+const ambientLight = new AmbientLight({
+  color: [255, 255, 255],
+  intensity: 0.6,
+});
+const afternoonLight = new DirectionalLight({
+  color: [255, 255, 255],
+  intensity: 0.9,
+  direction: [-300, -90, -500],
+});
+const lightingEffect = new LightingEffect({ ambientLight, afternoonLight });
+const hexMaterial = {
+  ambient: 0.85,
+  diffuse: 0.5,
+  shininess: 32,
+  specularColor: [30, 30, 30],
+};
+const is3d = false;
+
 type Props = $ReadOnly<{|
   currentCity: City,
   chargingData: Dataset<ChargingDatum> | null,
@@ -109,6 +130,7 @@ export default function Map({ currentCity, chargingData }: Props) {
     <StyledContainer>
       <DeckGL
         controller={true}
+        effects={is3d ? [lightingEffect] : undefined}
         getCursor={({ isDragging }) =>
           isHovering ? 'pointer' : isDragging ? 'grabbing' : 'grab'
         }
@@ -126,11 +148,12 @@ export default function Map({ currentCity, chargingData }: Props) {
           coverage={0.9}
           wireframe={false}
           filled={true}
-          extruded={true}
+          extruded={is3d}
           elevationScale={20}
           getHexagon={d => d.hex}
           getFillColor={d => [255, d.onShift * 255, 0]}
-          getElevation={d => d.atHome * 100}
+          getElevation={is3d ? d => d.atHome * 100 : undefined}
+          material={is3d ? hexMaterial : undefined}
         />
       </DeckGL>
       {isLoading && <LoadingIcon withBackground />}
