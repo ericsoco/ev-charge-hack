@@ -1,7 +1,14 @@
 // @flow
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import {
+  type ChargingRawDatum,
+  type ChargingDatum,
+} from '../state/data-reducer';
+import { selectCurrentCity } from '../state/ui-selectors';
+import useData, { type Dataset } from '../hooks/use-data';
 import Map from './map';
 
 const Overlay = styled.div`
@@ -28,10 +35,26 @@ const Title = styled.h1`
   ${p => p.theme.mixins.h1};
 `;
 
+// TODO: remove this and use something like useDeriveScales from hospital-trips
+const processChargingData = (
+  data: Dataset<ChargingRawDatum> | null
+): Dataset<ChargingDatum> =>
+  (data || []).map(d => ({
+    hex: d.hex,
+    onShift: d.od_kwh / 100,
+    atHome: d.home_kwh / 100,
+  }));
+
 export default function App() {
+  const currentCity = useSelector(selectCurrentCity());
+  const chargingRawData = useData<ChargingRawDatum>({ city: currentCity });
+  const chargingData = useMemo(() => processChargingData(chargingRawData), [
+    chargingRawData,
+  ]);
+
   return (
     <div>
-      <Map />
+      <Map currentCity={currentCity} chargingData={chargingData} />
       <Overlay>
         <div>
           <TitleContainer>

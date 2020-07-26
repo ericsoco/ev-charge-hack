@@ -1,19 +1,20 @@
-export const INCREMENT = 'INCREMENT';
-export const DECREMENT = 'DECREMENT';
+// @flow
+import reduceReducers from 'reduce-reducers';
 
-export default function rootReducer(state, action) {
-  switch (action.type) {
-    case INCREMENT:
-      return {
-        ...state,
-        root: state.root + 1,
-      };
-    case DECREMENT:
-      return {
-        ...state,
-        root: state.root - 1,
-      };
-    default:
-      return state;
-  }
-}
+import data, {
+  INITIAL_STATE as dataState,
+  type DataState,
+} from './data-reducer';
+import ui, { INITIAL_STATE as uiState, type UIState } from './ui-reducer';
+
+export type RootState = $ReadOnly<{|
+  data: DataState,
+  ui: UIState,
+|}>;
+
+export const ROOT_STATE: RootState = {
+  data: dataState,
+  ui: uiState,
+};
+
+export default reduceReducers(null, data, ui);

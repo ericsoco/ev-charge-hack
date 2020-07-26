@@ -1,11 +1,15 @@
 // @flow
 import React, { useEffect, useState } from 'react';
 import DeckGL from '@deck.gl/react';
+import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { FlyToInterpolator } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 import styled, { type BareStyledComponent } from 'styled-components';
 
 import LoadingIcon from './loading-icon';
+import { type Dataset } from '../hooks/use-data';
+import { type ChargingDatum } from '../state/data-reducer';
+import { type City } from '../state/ui-reducer';
 
 const performAdditiveBlending = false;
 // https://docs.mapbox.com/api/maps/#styles
@@ -26,6 +30,11 @@ const commonViewState = {
   transitionInterpolator: new FlyToInterpolator(),
 };
 const mapViewState = {
+  LON: {
+    longitude: 0.1278,
+    latitude: 51.5074,
+    zoom: 9,
+  },
   CHI: {
     longitude: -87.8,
     latitude: 41.85,
@@ -83,9 +92,10 @@ const mapViewState = {
 };
 
 type Props = $ReadOnly<{|
-  currentCity?: string,
+  currentCity: City,
+  chargingData: Dataset<ChargingDatum> | null,
 |}>;
-export default function Map({ currentCity = 'SF' }: Props) {
+export default function Map({ currentCity, chargingData }: Props) {
   const [viewState, setViewState] = useState(mapViewState[currentCity]);
   useEffect(() => {
     setViewState(mapViewState[currentCity]);
@@ -93,7 +103,7 @@ export default function Map({ currentCity = 'SF' }: Props) {
 
   // TODO: implement / remove as necessary
   const isHovering = false;
-  const isLoading = false;
+  const isLoading = !chargingData;
 
   return (
     <StyledContainer>
@@ -108,6 +118,19 @@ export default function Map({ currentCity = 'SF' }: Props) {
         <StaticMap
           mapboxApiAccessToken={process.env.MapboxAccessToken}
           mapStyle={basemap}
+        />
+        <H3HexagonLayer
+          id={'h3-hexagon-layer'}
+          data={chargingData}
+          // pickable={true}
+          coverage={0.9}
+          wireframe={false}
+          filled={true}
+          extruded={true}
+          elevationScale={20}
+          getHexagon={d => d.hex}
+          getFillColor={d => [255, d.onShift * 255, 0]}
+          getElevation={d => d.atHome * 100}
         />
       </DeckGL>
       {isLoading && <LoadingIcon withBackground />}
