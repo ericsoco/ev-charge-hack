@@ -17,6 +17,10 @@
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.7.5",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@uber/icons": "^1.0.40",
+    "baseui": "^9.89.0",
     "d3-array": "^2.4.0",
     "d3-fetch": "^1.2.0",
     "d3-scale": "^3.2.1",
@@ -30,7 +34,9 @@
     "reduce-reducers": "^1.0.4",
     "redux": "^4.0.4",
     "redux-actions": "^2.6.5",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "styletron-engine-atomic": "^1.4.6",
+    "styletron-react": "^5.2.7"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.10.4",

@@ -7,8 +7,13 @@ import { type City } from '../state/ui-reducer';
 // $FlowFixMe -- Flow doesn't know about Parcel's tilde resolver
 import chargingFileLON from 'url:~/static/data/LON-sample.csv';
 
+// NOTE: temp until endpoint is working
 const tripsFiles = {
   LON: chargingFileLON,
+  LA: chargingFileLON,
+  NYC: chargingFileLON,
+  SEA: chargingFileLON,
+  SF: chargingFileLON,
 };
 
 const FILE_EXT_REGEX = /\.([0-9a-z]+)$/i;

@@ -1,5 +1,6 @@
 // @flow
 import { createGlobalStyle } from 'styled-components';
+import { createMuiTheme } from '@material-ui/core';
 import reset from './reset';
 
 export const GlobalStyles = createGlobalStyle`
@@ -30,3 +31,18 @@ export default {
   color: '#000000',
   mixins,
 };
+
+export const muiTheme = createMuiTheme({
+  props: {
+    MuiButtonBase: {
+      disableRipple: true, // No more ripple, on the whole application 💣!
+    },
+    MuiInputBase: {
+      classes: {
+        input: {
+          padding: 0,
+        },
+      },
+    },
+  },
+});

@@ -150,7 +150,7 @@ const hexMaterial = {
   specularColor: [30, 30, 30],
 };
 
-const is3d = false;
+const is3d = true;
 
 const RGB_REGEX = /rgb\((.*)\)/;
 function rgbToArray(rgbStr) {
