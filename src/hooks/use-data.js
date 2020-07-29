@@ -19,12 +19,15 @@ const tripsFiles = {
 const FILE_EXT_REGEX = /\.([0-9a-z]+)$/i;
 
 export type Dataset<T: Object> = $ReadOnlyArray<T>;
+
 export default function useData<T>({
   city = null,
   url = null,
+  processor = identityProcessor,
 }: {
   city?: City,
   url?: string,
+  processor?: Object => Dataset<T>,
 }): Dataset<T> | null {
   const file = url || (city ? tripsFiles[city] : null);
   if (!file) {
@@ -52,7 +55,7 @@ export default function useData<T>({
             default:
               return;
           }
-          setData(response);
+          setData(processor(response));
         } catch (error) {
           console.error(error);
         }
@@ -60,7 +63,9 @@ export default function useData<T>({
 
       fetch();
     }
-  }, [file, extension]);
+  }, [file, extension, processor]);
 
   return data;
 }
+
+const identityProcessor = d => d;

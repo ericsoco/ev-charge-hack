@@ -9,8 +9,13 @@ import { setColorScale, setHeightScale } from '../state/data-reducer';
 import { type Dataset } from './use-data';
 
 // TODO: type d3 scales and use as return type here
+// TODO: move column-specific logic to data-processors
 type ScaleType = 'color' | 'height';
-function deriveScale(dataset, scaleType, accessor) {
+function deriveScale<T>(
+  dataset: Dataset<T>,
+  scaleType: ScaleType,
+  accessor: T => number
+) {
   switch (scaleType) {
     case 'color': {
       const p90 = quantile(dataset, 0.9, accessor);
@@ -19,11 +24,15 @@ function deriveScale(dataset, scaleType, accessor) {
         .interpolator(interpolateOrRd);
     }
     case 'height': {
-      const p10 = quantile(dataset, 0.1, accessor);
-      const p90 = quantile(dataset, 0.9, accessor);
+      // TODO: bucket into quantiles / use band scale?
+      // there are typically many zeroes; filter out to avoid scale skew
+      const nonZeros = dataset.filter(d => accessor(d) > 0);
+      const pBottom = quantile(nonZeros, 0.1, accessor);
+      const pTop = quantile(nonZeros, 0.99, accessor);
+      // const extents = extent(nonZeros, accessor);
       return scalePow()
-        .domain([p10, p90])
-        .range([0, 100])
+        .domain([pBottom, pTop])
+        .range([10, 500])
         .exponent(0.5)
         .clamp(true);
     }

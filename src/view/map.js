@@ -10,7 +10,11 @@ import styled, { type BareStyledComponent } from 'styled-components';
 
 import LoadingIcon from './loading-icon';
 import { type Dataset } from '../hooks/use-data';
-import { type ChargingDatum } from '../state/data-reducer';
+import {
+  colorAccessor,
+  heightAccessor,
+  type ChargingDatum,
+} from '../state/data-processors';
 import { selectColorScale, selectHeightScale } from '../state/data-selectors';
 import { type City } from '../state/ui-reducer';
 
@@ -55,8 +59,8 @@ function renderHexTooltip(hoverInfo) {
     <Tooltip left={x + 16} top={y + 16}>
       <TooltipBody>
         <ul>
-          <li>{`on shift: ${object.onShift}`}</li>
-          <li>{`at home: ${object.atHome}`}</li>
+          <li>{`KwH demand: ${colorAccessor(object)}`}</li>
+          <li>{`# chargers: ${heightAccessor(object)}`}</li>
         </ul>
       </TooltipBody>
     </Tooltip>

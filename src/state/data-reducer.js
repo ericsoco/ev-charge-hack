@@ -2,19 +2,9 @@
 import reduceReducers from 'reduce-reducers';
 import { createAction, handleActions } from 'redux-actions';
 
+import { type ChargingDatum } from './data-processors';
 import { reduceOver } from './utils';
 import { type RootState } from './root-reducer';
-
-export type ChargingRawDatum = $ReadOnly<{
-  hex: string,
-  od_kwh: string,
-  home_kwh: string,
-}>;
-export type ChargingDatum = $ReadOnly<{
-  hex: string,
-  onShift: number,
-  atHome: number,
-}>;
 
 export type DataState = $ReadOnly<{|
   colorScale: (ChargingDatum => string) | null,
