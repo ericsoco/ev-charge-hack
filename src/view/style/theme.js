@@ -1,6 +1,6 @@
 // @flow
 import { createGlobalStyle } from 'styled-components';
-import { createMuiTheme } from '@material-ui/core';
+import { LightTheme, type ThemeT } from 'baseui';
 import reset from './reset';
 
 export const GlobalStyles = createGlobalStyle`
@@ -27,22 +27,22 @@ const mixins = {
   },
 };
 
-export default {
+const APP_THEME = {
   color: '#000000',
   mixins,
 };
 
-export const muiTheme = createMuiTheme({
-  props: {
-    MuiButtonBase: {
-      disableRipple: true, // No more ripple, on the whole application 💣!
-    },
-    MuiInputBase: {
-      classes: {
-        input: {
-          padding: 0,
-        },
-      },
-    },
-  },
-});
+export const STYLED_COMPONENTS_THEME = {
+  ...APP_THEME,
+};
+
+/**
+ * Merges Base Web theme with app themes.
+ * For use with Base Web / Styletron components.
+ */
+export const BASE_WEB_THEME: ThemeT = ({
+  ...LightTheme,
+  ...APP_THEME,
+  // BaseProvider requires an exact type for theme,
+  // making extension impossible
+}: any);

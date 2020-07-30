@@ -6,6 +6,7 @@ import { DownloadOutlined } from '@uber/icons';
 
 import { type City } from '../state/ui-reducer';
 import CitySelector from './city-selector';
+import ModelSlider from './model-slider';
 
 const Container: BareStyledComponent = styled.div`
   position: absolute;
@@ -58,7 +59,9 @@ type Props = $ReadOnly<{|
 
 // eslint-disable-next-line no-empty-pattern
 export default function Sidebar({ currentCity }: Props) {
+  // TODO: implement slider handlers
   // const dispatch = useDispatch();
+  // const onOffShiftChange = () => {};
 
   return (
     <Container>
@@ -66,7 +69,9 @@ export default function Sidebar({ currentCity }: Props) {
         <Title>{'EV Charging Demand Model'}</Title>
         <CitySelector currentCity={currentCity} />
       </TopContainer>
-      <BottomContainer></BottomContainer>
+      <BottomContainer>
+        <ModelSlider />
+      </BottomContainer>
       <BottomButton>
         <DownloadOutlined size={'1.25rem'} />
         <span style={{ marginLeft: '1rem' }}>{'Download data'}</span>

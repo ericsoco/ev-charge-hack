@@ -198,4 +198,9 @@ export default css`
   td {
     user-select: text;
   }
+
+  /* Styletron Provider adds a wrapper div; descendants need it to have height */
+  #wrapper > div:first-of-type {
+    height: 100%;
+  }
 `;

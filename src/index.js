@@ -5,11 +5,17 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-import { ThemeProvider as MUIThemeProvider } from '@material-ui/core/styles';
+import { BaseProvider } from 'baseui';
+import { Client as Styletron } from 'styletron-engine-atomic';
+import { Provider as StyletronProvider } from 'styletron-react';
 
 import initialState from './state';
 import rootReducer from './state/root-reducer';
-import theme, { muiTheme, GlobalStyles } from './view/style/theme';
+import {
+  BASE_WEB_THEME,
+  STYLED_COMPONENTS_THEME,
+  GlobalStyles,
+} from './view/style/theme';
 import App from './view/app';
 import FourOhFour from './view/404';
 
@@ -17,20 +23,26 @@ const store = createStore(rootReducer, initialState);
 const appElement = document.getElementById('app');
 const basePath = process.env.BASE_PATH || '';
 
+const styletronEngine = new Styletron();
+
 if (appElement) {
+  const bwt = BASE_WEB_THEME;
+  console.log(bwt);
   render(
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <MUIThemeProvider theme={muiTheme}>
-          <BrowserRouter basename={`/${basePath}`}>
-            <Switch>
-              <Route path={'/'} exact component={App} />
-              <Route component={FourOhFour} />
-            </Switch>
-          </BrowserRouter>
-        </MUIThemeProvider>
-        <GlobalStyles />
-      </ThemeProvider>
+      <StyletronProvider value={styletronEngine}>
+        <BaseProvider theme={BASE_WEB_THEME}>
+          <ThemeProvider theme={STYLED_COMPONENTS_THEME}>
+            <BrowserRouter basename={`/${basePath}`}>
+              <Switch>
+                <Route path={'/'} exact component={App} />
+                <Route component={FourOhFour} />
+              </Switch>
+            </BrowserRouter>
+            <GlobalStyles />
+          </ThemeProvider>
+        </BaseProvider>
+      </StyletronProvider>
     </Provider>,
     appElement
   );
